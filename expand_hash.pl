@@ -12,12 +12,7 @@ open my $fh, '< vault-cloud.json'  or die "Can't open file $!";
 my $js_str = do { local $/; <$fh> };
 
 my $hashref = decode_json($js_str);
-my %hash = %$hashref;
-for my $level1 (keys %hash )
-{
-        my $ref = \%{$hash{$level1}};
-        expand_hash($ref, $level1);
-}
+expand_hash($hashref, "");
 close $fh;
 
 
