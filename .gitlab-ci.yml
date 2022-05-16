@@ -1,14 +1,5 @@
 image: nexus.esphere.local:5000/ubuntu:20.04
 
-before_script:
-  - echo "Before script section"
-  - echo "For example you might run an update here or install a build dependency"
-  - echo "Or perhaps you might print out some debugging details"
-
-after_script:
-  - echo "After script section"
-  - echo "For example you might do some cleanup here"
-
 deploy:
   stage: deploy
   script:
@@ -16,4 +7,8 @@ deploy:
     - echo "${SSH_KEY}" > ssh_key; chmod 600 ssh_key
     - apt update ; apt install openssh-client -y
     - ssh -o StrictHostKeyChecking=no -o BatchMode=yes  -i ssh_key titaev.ab@172.17.229.9 "cd /home/titaev.ab/test; git pull"
-
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "devops" || $CI_COMMIT_REF_NAME == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - when: manual
