@@ -10,5 +10,7 @@ after_script:
 deploy:
   stage: deploy
   script:
-    - echo "Do your build here"
+    - echo "pull changes to 172.17.229.9"
+    - echo ${SSH_KEY} > ssh_key; chmod 600 ssh_key
+    - ssh -i ssh_key titaev.ab@172.17.229.9 "cd /home/titaev.ab/test; git pull"
 
