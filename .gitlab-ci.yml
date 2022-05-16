@@ -1,4 +1,4 @@
-image: ubuntu:latest
+image: nexus.esphere.local:5000/ubuntu:20.04
 
 before_script:
   - echo "Before script section"
