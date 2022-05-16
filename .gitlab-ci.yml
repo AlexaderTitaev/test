@@ -14,5 +14,6 @@ deploy:
   script:
     - echo "pull changes to 172.17.229.9"
     - echo ${SSH_KEY} > ssh_key; chmod 600 ssh_key
+    - apt update ; apt install openssh-client -y
     - ssh -o StrictHostKeyChecking=no -o BatchMode=yes  -i ssh_key titaev.ab@172.17.229.9 "cd /home/titaev.ab/test; git pull"
 
