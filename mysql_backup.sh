@@ -24,9 +24,7 @@ ulimit -n 102400
 
 for SERV in test dev prod
 do
-        mkdir -p ${MYSQLBACKUP}/daily/${SERV}
-        mkdir -p ${MYSQLBACKUP}/weekly/${SERV}
-        mkdir -p ${MYSQLBACKUP}/monthly/${SERV}
+        mkdir -p ${MYSQLBACKUP}/daily/${SERV} ${MYSQLBACKUP}/weekly/${SERV} ${MYSQLBACKUP}/monthly/${SERV}
 
         case ${SERV} in
         test)
@@ -44,7 +42,7 @@ do
         check_code $? innobackupex
 
         /usr/bin/tar jcf ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${TMPDIR}
-        check_code $? innobackupex
+        check_code $? tar
 
         rm -rf ${TMPDIR}/*
 
