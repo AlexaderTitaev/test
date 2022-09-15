@@ -56,3 +56,4 @@ do
 		ln ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${MYSQLBACKUP}/monthly/${SERV}/mysql-${DT}.tbz2
 	fi
 done
+
