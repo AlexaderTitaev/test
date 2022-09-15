@@ -39,7 +39,7 @@ do
 	esac
 
 	/usr/bin/innobackupex --slave-info --parallel=1 ${PARAM} --stream=tar ./ | bzip2 - > ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2
-	check_code $? innobackupex
+	check_code $? innobackupex+tar
 
 #	/usr/bin/innobackupex --slave-info --parallel=1 ${PARAM} ${TMPDIR}
 #	check_code $? innobackupex
