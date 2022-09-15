@@ -9,9 +9,9 @@ MYSQLBACKUP=${BACKUPDIR}/mysql
 
 check_code()
 {
-        if [ $1 -ne 0 ]; then
-                echo cant make $2 | mailx -s "replica mysql backup error" tit@irk.ru
-        fi
+	if [ $1 -ne 0 ]; then
+		echo cant make $2 | mailx -s "replica mysql backup error" tit@irk.ru
+	fi
 }
 
 rm -rf ${TMPDIR}
@@ -24,32 +24,35 @@ ulimit -n 102400
 
 for SERV in test dev prod
 do
-        mkdir -p ${MYSQLBACKUP}/daily/${SERV} ${MYSQLBACKUP}/weekly/${SERV} ${MYSQLBACKUP}/monthly/${SERV}
+	mkdir -p ${MYSQLBACKUP}/daily/${SERV} ${MYSQLBACKUP}/weekly/${SERV} ${MYSQLBACKUP}/monthly/${SERV}
 
-        case ${SERV} in
-        test)
-                PARAM='--socket=/var/lib/mysql_test/mysql.sock'
-                ;;
-        dev)
-                PARAM='--socket=/var/lib/mysql_dev/mysql.sock'
-                ;;
-        prod)
-                PARAM="--socket=/var/lib/mysql_prod/mysql.sock --user=root --password='pass'"
-                ;;
-        esac
+	case ${SERV} in
+	test)
+		PARAM='--socket=/var/lib/mysql_test/mysql.sock'
+		;;
+	dev)
+		PARAM='--socket=/var/lib/mysql_dev/mysql.sock'
+		;;
+	prod)
+		PARAM="--socket=/var/lib/mysql_prod/mysql.sock --user=root --password='pass'"
+		;;
+	esac
 
-        /usr/bin/innobackupex --slave-info --parallel=1 ${PARAM} ${TMPDIR}
-        check_code $? innobackupex
+	/usr/bin/innobackupex --slave-info --parallel=1 ${PARAM} --stream=tar ./ | bzip2 - > ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2
+	check_code $? innobackupex
 
-        /usr/bin/tar jcf ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${TMPDIR}
-        check_code $? tar
+#	/usr/bin/innobackupex --slave-info --parallel=1 ${PARAM} ${TMPDIR}
+#	check_code $? innobackupex
+#
+#	/usr/bin/tar jcf ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${TMPDIR}
+#	check_code $? tar
 
-        rm -rf ${TMPDIR}/*
+	rm -rf ${TMPDIR}/*
 
-        if [ ${WD} -eq 1 ]; then
-                ln ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${MYSQLBACKUP}/weekly/${SERV}/mysql-${DT}.tbz2
-        fi
-        if [ ${MD} -eq 1 ]; then
-                ln ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${MYSQLBACKUP}/monthly/${SERV}/mysql-${DT}.tbz2
-        fi
+	if [ ${WD} -eq 1 ]; then
+		ln ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${MYSQLBACKUP}/weekly/${SERV}/mysql-${DT}.tbz2
+	fi
+	if [ ${MD} -eq 1 ]; then
+		ln ${MYSQLBACKUP}/daily/${SERV}/mysql-${DT}.tbz2 ${MYSQLBACKUP}/monthly/${SERV}/mysql-${DT}.tbz2
+	fi
 done
