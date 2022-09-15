@@ -8,7 +8,7 @@ deploy:
     - apt update ; apt install openssh-client -y
     - ssh -o StrictHostKeyChecking=no -o BatchMode=yes  -i ssh_key titaev.ab@172.17.229.9 "cd /home/titaev.ab/test; git pull"
   rules:
-    - if: CI_COMMIT_MESSAGE =~ /[A-Z]+-[0-9]+/
+    - if: '$CI_COMMIT_MESSAGE =~ /[A-Z]+-[0-9]+/'
     - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "devops" || $CI_COMMIT_REF_NAME == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
     - when: manual
