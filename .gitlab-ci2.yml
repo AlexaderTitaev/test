@@ -1,0 +1,29 @@
+publish_code:
+  trigger:
+    include:
+      - project: 'templates/cloud'
+        file: '/templates/.simple.build.npm-publish.template.yml'
+
+publish_doc:
+  stage: deploy
+  tags:
+    - prod
+  image:
+    name: harbor.esphere.local/library/node:14.16.1-alpine
+    entrypoint: []
+  script:
+    - |
+      npm i
+      npm run build
+      cd storybook
+      npm i
+      npm run build:storybook
+      ls -la ./build
+      rsync -V || apk add rsync openssh-client
+      echo ${GLOBAL_CDN_ROBOT_KEY} | base64 -d  > /tmp/key
+      chmod 600 /tmp/key
+      rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i /tmp/key -l ${SSH_LOGIN}" ./build/ ${NGINX_IP}:/var/www/nginx/korus-ui_storybook/
+  cache:
+    paths:
+      - node_modules/
+  when: manual
