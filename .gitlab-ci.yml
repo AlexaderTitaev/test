@@ -1,14 +1,16 @@
-image: nexus.esphere.local:5000/ubuntu:20.04
-
-deploy:
+publish_doc:
   stage: deploy
+  tags:
+    - srv-jira-runner
+  image:
+    name: harbor.esphere.local/library/node:14.16.1-alpine
+    entrypoint: []
   script:
-    - echo "pull changes to 172.17.229.9"
-    - echo "${SSH_KEY}" > ssh_key; chmod 600 ssh_key
-    - apt update ; apt install openssh-client -y
-    - ssh -o StrictHostKeyChecking=no -o BatchMode=yes  -i ssh_key titaev.ab@172.17.229.9 "cd /home/titaev.ab/test; git pull"
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /[A-Z]+-[0-9]+/'
-    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "devops" || $CI_COMMIT_REF_NAME == "develop" || $CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-    - when: manual
+    - |
+      apk add curl
+      ping -c4 172.17.120.72
+      curl -v -k -I http://s3.kcloud.esphere.ru:9000/
+  cache:
+    paths:
+      - node_modules/
+  when: manual
