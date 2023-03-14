@@ -6,6 +6,6 @@ include:
     ref: master
     file: 'cicd/nuclei.yml'
   
-  stages:
-    - nuclei
+stages:
+  - nuclei
   
