@@ -1,16 +1,11 @@
-publish_doc:
-  stage: deploy
-  tags:
-    - srv-jira-runner
-  image:
-    name: harbor.esphere.local/library/node:14.16.1-alpine
-    entrypoint: []
-  script:
-    - |
-      apk add curl
-      ping -c4 172.17.120.72
-      curl -v -k -I http://s3.kcloud.esphere.ru:9000/
-  cache:
-    paths:
-      - node_modules/
-  when: manual
+variables:
+  NUCLEI_TARGET: https://spk-rating-spk-preprod.esphere.local/
+  
+include:
+  - project: 'qaautomation/tools/qa-tools'
+    ref: master
+    file: 'cicd/nuclei.yml'
+  
+  stages:
+    - nuclei
+  
